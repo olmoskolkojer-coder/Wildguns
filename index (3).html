@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wild Guns — Saldırı Hesaplayıcı</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #e94560;
+  --gold: #f0c040;
+  --bg: #0d0d1a;
+  --surface: #13132a;
+  --surface2: #1a1a35;
+  --border: #2a2a50;
+  --text: #e8e8f0;
+  --muted: #7070a0;
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Rajdhani', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--sans); min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 0 60px; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(233,69,96,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(233,69,96,0.03) 1px, transparent 1px);
+  background-size: 40px 40px; pointer-events: none; z-index: 0;
+}
+.clan-banner {
+  width: 100%;
+  background: linear-gradient(135deg, #1a0a0e 0%, #2a0d15 50%, #1a0a0e 100%);
+  border-bottom: 2px solid var(--gold);
+  padding: 14px 24px; text-align: center; position: relative; z-index: 2;
+}
+.clan-banner::before { content: '✦'; color: var(--gold); font-size: 14px; margin-right: 12px; opacity: 0.7; }
+.clan-banner::after  { content: '✦'; color: var(--gold); font-size: 14px; margin-left:  12px; opacity: 0.7; }
+.clan-name {
+  display: inline; font-size: 22px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  background: linear-gradient(135deg, #f0c040, #ffd97a, #c8960a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.clan-sub { display: block; font-size: 10px; letter-spacing: 0.3em; color: rgba(240,192,64,0.5); font-family: var(--mono); margin-top: 3px; text-transform: uppercase; }
+
+.info-banner {
+  width: 100%; background: rgba(46,204,113,0.07);
+  border-bottom: 1px solid rgba(46,204,113,0.25);
+  padding: 13px 24px; text-align: center; position: relative; z-index: 1;
+}
+.info-banner p { font-size: 13px; font-family: var(--mono); color: rgba(46,204,113,0.85); line-height: 1.7; letter-spacing: 0.02em; }
+.info-banner strong { color: #2ecc71; }
+
+.wrap { position: relative; z-index: 1; width: 100%; max-width: 600px; padding: 36px 16px 0; }
+
+header { text-align: center; margin-bottom: 32px; }
+.logo { font-size: 11px; letter-spacing: 0.3em; color: var(--red); text-transform: uppercase; margin-bottom: 10px; font-family: var(--mono); }
+h1 { font-size: 32px; font-weight: 700; background: linear-gradient(135deg, #fff 30%, var(--red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
+.subtitle { font-size: 13px; color: var(--muted); font-family: var(--mono); }
+
+.mod-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.mod-btn {
+  padding: 16px 12px; border: 1px solid var(--border);
+  border-radius: 12px; background: var(--surface);
+  color: var(--muted); font-family: var(--sans);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  text-align: center; transition: all 0.2s; line-height: 1.4;
+}
+.mod-btn .mod-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.mod-btn:hover { border-color: var(--red); color: var(--text); }
+.mod-btn.active { border-color: var(--red); color: var(--red); background: rgba(233,69,96,0.08); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+.section-title { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); font-family: var(--mono); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.section-label { font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); margin-bottom: 8px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; font-family: var(--mono); }
+.field input {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; font-size: 16px;
+  font-family: var(--mono); color: var(--text); outline: none;
+  transition: border-color 0.2s; width: 100%;
+}
+.field input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(233,69,96,0.12); }
+.divider { border: none; border-top: 1px solid var(--border); margin: 6px 0 16px; }
+
+.ulus-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.ulus-btn {
+  padding: 11px 8px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface2);
+  color: var(--muted); font-family: var(--sans);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  text-align: center; transition: all 0.2s;
+}
+.ulus-btn:hover { border-color: var(--red); color: var(--text); }
+.ulus-btn.active { border-color: var(--red); color: var(--red); background: rgba(233,69,96,0.1); }
+
+.btn {
+  width: 100%; padding: 14px; background: var(--red); border: none;
+  border-radius: 10px; color: white; font-size: 16px; font-weight: 700;
+  font-family: var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s, transform 0.1s;
+}
+.btn:hover { background: #c73652; }
+.btn:active { transform: scale(0.98); }
+.error { color: var(--red); font-size: 12px; font-family: var(--mono); text-align: center; margin-top: 10px; min-height: 18px; }
+
+.result { display: none; margin-top: 4px; }
+.result.show { display: block; }
+.coord-info { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 14px; }
+.unit-grid { display: flex; flex-direction: column; gap: 9px; }
+.unit-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 13px 16px;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: center; gap: 12px; transition: border-color 0.2s;
+}
+.unit-card:hover { border-color: rgba(233,69,96,0.35); }
+.unit-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.unit-role { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.unit-time { font-family: var(--mono); font-size: 19px; color: #fff; text-align: right; white-space: nowrap; }
+.unit-speed { font-size: 10px; color: var(--muted); text-align: right; font-family: var(--mono); margin-top: 2px; }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+footer { margin-top: 40px; font-size: 12px; color: var(--muted); font-family: var(--mono); text-align: center; letter-spacing: 0.05em; }
+
+@media (max-width: 480px) {
+  h1 { font-size: 26px; }
+  .mod-btn { font-size: 13px; }
+  .unit-time { font-size: 16px; }
+  .clan-name { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+
+<div class="clan-banner">
+  <span class="clan-name">Vefa Sadakat Klanı</span>
+  <span class="clan-sub">Wild Guns · Resmi Araçlar</span>
+</div>
+
+<div class="info-banner">
+  <p>
+    ⚠ <strong>Önemli Not:</strong> Gösterilen süreler, <strong>düşmanın hangi birimi kullandığına göre kaç sürede geleceğini</strong> gösterir.<br>
+    Oyun, saldırı süresini her zaman grupta bulunan <strong>en yavaş üniteye göre</strong> hesaplar.<br>
+    <strong>Yuvarlama nedeniyle süreler ±1 saniye farklılık gösterebilir.</strong>
+  </p>
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">⚔ Wild Guns</div>
+    <h1>Saldırı Hesaplayıcı</h1>
+    <div class="subtitle">// hesaplama modunu seç</div>
+  </header>
+
+  <div class="mod-row">
+    <button class="mod-btn" onclick="secMod('saldiri', this)">
+      <span class="mod-icon">⚔</span>
+      Saldırı Yapacağım<br>
+      <span style="font-size:11px;font-family:var(--mono);opacity:0.6">Hedef köye saldırı</span>
+    </button>
+    <button class="mod-btn active" onclick="secMod('savunma', this)">
+      <span class="mod-icon">🛡</span>
+      Saldırı Alıyorum<br>
+      <span style="font-size:11px;font-family:var(--mono);opacity:0.6">Düşman kaç sürede gelir</span>
+    </button>
+  </div>
+
+  <!-- SALDIRI PANELİ -->
+  <div class="panel" id="panel-saldiri">
+    <div class="card">
+      <div class="section-title">⚔ Saldırı Hesaplama — Hedef Köye Süre</div>
+      <div class="section-label">Ulus Seç</div>
+      <div class="ulus-row">
+        <button class="ulus-btn active" onclick="secUlus('saldiri','kovboy',this)">🤠 Kovboy</button>
+        <button class="ulus-btn" onclick="secUlus('saldiri','kizildereli',this)">🪶 Kızıldereli</button>
+        <button class="ulus-btn" onclick="secUlus('saldiri','meksikali',this)">🌵 Meksikalı</button>
+      </div>
+      <div class="section-label">Sizin Köyünüz (Başlangıç)</div>
+      <div class="row2">
+        <div class="field"><label>X1</label><input type="number" id="sa-x1" placeholder="x1"></div>
+        <div class="field"><label>Y1</label><input type="number" id="sa-y1" placeholder="y1"></div>
+      </div>
+      <div class="section-label">Saldırmak İstediğiniz Köy (Hedef)</div>
+      <div class="row2">
+        <div class="field"><label>X2</label><input type="number" id="sa-x2" placeholder="x2"></div>
+        <div class="field"><label>Y2</label><input type="number" id="sa-y2" placeholder="y2"></div>
+      </div>
+      <hr class="divider">
+      <button class="btn" onclick="hesapla('saldiri')">Hesapla</button>
+      <div class="error" id="err-saldiri"></div>
+    </div>
+    <div class="result" id="result-saldiri">
+      <div class="coord-info" id="ci-saldiri"></div>
+      <div class="unit-grid" id="grid-saldiri"></div>
+    </div>
+  </div>
+
+  <!-- SAVUNMA PANELİ — DEFAULT AÇIK -->
+  <div class="panel active" id="panel-savunma">
+    <div class="card">
+      <div class="section-title">🛡 Savunma Hesaplama — Düşman Ne Zaman Gelir</div>
+      <div class="section-label">Düşmanın Ulusu</div>
+      <div class="ulus-row">
+        <button class="ulus-btn active" onclick="secUlus('savunma','kovboy',this)">🤠 Kovboy</button>
+        <button class="ulus-btn" onclick="secUlus('savunma','kizildereli',this)">🪶 Kızıldereli</button>
+        <button class="ulus-btn" onclick="secUlus('savunma','meksikali',this)">🌵 Meksikalı</button>
+      </div>
+      <div class="section-label">Saldırıyı Gönderen Köy (Düşman)</div>
+      <div class="row2">
+        <div class="field"><label>X1</label><input type="number" id="sv-x1" placeholder="x1"></div>
+        <div class="field"><label>Y1</label><input type="number" id="sv-y1" placeholder="y1"></div>
+      </div>
+      <div class="section-label">Sizin Köyünüz (Hedef)</div>
+      <div class="row2">
+        <div class="field"><label>X2</label><input type="number" id="sv-x2" placeholder="x2"></div>
+        <div class="field"><label>Y2</label><input type="number" id="sv-y2" placeholder="y2"></div>
+      </div>
+      <hr class="divider">
+      <button class="btn" onclick="hesapla('savunma')">Hesapla</button>
+      <div class="error" id="err-savunma"></div>
+    </div>
+    <div class="result" id="result-savunma">
+      <div class="coord-info" id="ci-savunma"></div>
+      <div class="unit-grid" id="grid-savunma"></div>
+    </div>
+  </div>
+
+  <footer>Vefa Sadakat Klanı · Wild Guns &nbsp;·&nbsp; Tüm hakları saklıdır</footer>
+</div>
+
+<script>
+const ULUSLAR = {
+  kovboy: [
+    { ad: "Keskin Nişancı",   rol: "SALDIRI — İlk Vuruş, Dalga Temizleme", hiz: 6  },
+    { ad: "Asker",            rol: "SALDIRGAN",                             hiz: 6  },
+    { ad: "Çiftçi",           rol: "SAVUNMA — Önce Süvari, Sonra Piyade",  hiz: 5  },
+    { ad: "Avcı",             rol: "HÜCUM / SAVUNMA — İzleme",             hiz: 16 },
+    { ad: "Kovboy",           rol: "SAVUNMA — Önce Piyade, Sonra Süvari",  hiz: 16 },
+    { ad: "Bombacı",          rol: "SALDIRI — Duvarlar / Surlar",          hiz: 4  },
+    { ad: "Süvari",           rol: "SAVUNMA — Önce Süvari, Sonra Piyade",  hiz: 14 },
+    { ad: "Top",              rol: "SALDIRI — Binalara Saldırma",          hiz: 3  },
+    { ad: "Viski Dağıtıcısı", rol: "SALDIRI — Kasabaları Ele Geçirme",    hiz: 5  },
+  ],
+  kizildereli: [
+    { ad: "Okçu",                 rol: "SALDIRGAN",                                  hiz: 7  },
+    { ad: "Tüfekçi",              rol: "SAVUNMA — Önce Süvari, Sonra Piyade",        hiz: 6  },
+    { ad: "Tomahawk Savaş Uçağı", rol: "SALDIRI — İlk Vuruş, Dalga Temizleme",      hiz: 7  },
+    { ad: "Atlı Okçu",            rol: "SAVUNMA — Önce Piyade, Sonra Süvari",       hiz: 10 },
+    { ad: "Gözcü",                rol: "HÜCUM / SAVUNMA — İzleme",                  hiz: 13 },
+    { ad: "Ateşli Kötü Ruh",      rol: "SALDIRI — Duvarlar / Surlar",               hiz: 4  },
+    { ad: "Alaybozan",            rol: "SALDIRI — Kaynak Baskını, Dalga Temizleme", hiz: 11 },
+    { ad: "Ok Yakan",             rol: "SALDIRI — Binalara Saldırma",               hiz: 3  },
+    { ad: "Ateşsuyu Dağıtıcı",    rol: "SALDIRI — Kasabaları Ele Geçirme",          hiz: 4  },
+  ],
+  meksikali: [
+    { ad: "Pistolero",      rol: "SAVUNMA — Piyadeye Karşı",              hiz: 5  },
+    { ad: "Poncho",         rol: "SAVUNMA — Önce Süvari, Sonra Piyade",  hiz: 6  },
+    { ad: "Caballeria",     rol: "SALDIRI — Kaynak Baskını, İlk Dalga",  hiz: 14 },
+    { ad: "El Mariachi",    rol: "SALDIRI — İkincil Dalga Temizleme",    hiz: 7  },
+    { ad: "El Descubridor", rol: "HÜCUM / SAVUNMA — İzleme",            hiz: 16 },
+    { ad: "Bombolero",      rol: "SALDIRI — Duvarlar / Surlar",          hiz: 4  },
+    { ad: "Conquistador",   rol: "SAVUNMA — Önce Süvari, Sonra Piyade", hiz: 14 },
+    { ad: "Topçu",          rol: "SALDIRI — Binalara Saldırma",         hiz: 3  },
+    { ad: "Tekila",         rol: "SALDIRI — Kasabaları Ele Geçirme",    hiz: 4  },
+  ]
+};
+
+const seciliUlus = { saldiri: 'kovboy', savunma: 'kovboy' };
+
+function secMod(mod, btn) {
+  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + mod).classList.add('active');
+}
+
+function secUlus(mod, ulus, btn) {
+  seciliUlus[mod] = ulus;
+  const panel = document.getElementById('panel-' + mod);
+  panel.querySelectorAll('.ulus-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function formatSure(sn) {
+  const s  = Math.floor(sn / 3600);
+  const d  = Math.floor((sn % 3600) / 60);
+  const sc = sn % 60;
+  const pad = n => String(n).padStart(2,'0');
+  return `${pad(s)}:${pad(d)}:${pad(sc)}`;
+}
+
+function hesapla(mod) {
+  const pre = mod === 'saldiri' ? 'sa' : 'sv';
+  const x1  = parseFloat(document.getElementById(pre+'-x1').value);
+  const y1  = parseFloat(document.getElementById(pre+'-y1').value);
+  const x2  = parseFloat(document.getElementById(pre+'-x2').value);
+  const y2  = parseFloat(document.getElementById(pre+'-y2').value);
+  const err    = document.getElementById('err-'+mod);
+  const result = document.getElementById('result-'+mod);
+
+  if ([x1,y1,x2,y2].some(isNaN)) {
+    err.textContent = '⚠ Tüm koordinatları eksiksiz gir.';
+    result.classList.remove('show'); return;
+  }
+  err.textContent = '';
+
+  const dx     = Math.abs(x1 - x2);
+  const dy     = Math.abs(y1 - y2);
+  const mesafe = Math.hypot(dx, dy);
+
+  const label1 = mod === 'saldiri' ? 'Sizin köyünüz' : 'Düşman köyü';
+  const label2 = mod === 'saldiri' ? 'Hedef köy'     : 'Sizin köyünüz';
+  document.getElementById('ci-'+mod).textContent =
+    `${label1}: ${x1}|${y1}  →  ${label2}: ${x2}|${y2}   ·   mesafe: ${mesafe.toFixed(3)}`;
+
+  const grid = document.getElementById('grid-'+mod);
+  grid.innerHTML = '';
+
+  ULUSLAR[seciliUlus[mod]].forEach(u => {
+    const sn  = Math.ceil(mesafe * 3600 / u.hiz);
+    const div = document.createElement('div');
+    div.className = 'unit-card';
+    div.innerHTML = `
+      <div>
+        <div class="unit-name">${u.ad}</div>
+        <div class="unit-role">${u.rol}</div>
+      </div>
+      <div>
+        <div class="unit-time">${formatSure(sn)}</div>
+        <div class="unit-speed">hız: ${u.hiz}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+
+  result.classList.add('show');
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
