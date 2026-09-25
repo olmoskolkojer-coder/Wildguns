@@ -275,6 +275,8 @@ const ULUSLAR = {
   ]
 };
 
+const HIZ_CARPANI = 6; // Sunucu hızı: tüm süreler bu sayıya bölünür
+
 const seciliUlus = { saldiri: 'kovboy', savunma: 'kovboy' };
 
 function secMod(mod, btn) {
@@ -327,7 +329,7 @@ function hesapla(mod) {
   grid.innerHTML = '';
 
   ULUSLAR[seciliUlus[mod]].forEach(u => {
-    const sn  = Math.ceil(mesafe * 3600 / u.hiz);
+    const sn  = Math.ceil(mesafe * 3600 / u.hiz / HIZ_CARPANI);
     const div = document.createElement('div');
     div.className = 'unit-card';
     div.innerHTML = `
@@ -347,4 +349,5 @@ function hesapla(mod) {
 }
 </script>
 </body>
+</html>
 </html>
